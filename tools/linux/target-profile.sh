@@ -7,6 +7,10 @@
 ##     rekall profile, and copies back to host machine.
 ## (2) Converts profile to JSON format via rekal virtual env
 ##
+## Notes:
+## -This script doesn't need the rekall repo and needn't be in the repo
+## -virtualenv must be installed on the host
+##
 
 
 VENV=~/.virtualenvs/rekall
@@ -25,7 +29,7 @@ runme() {
     echo "$*"
     $*
 }
-bob() {
+
 runme scp -rq $PWD $REKALL_TARGET:$REKALL_REMOTE_LOC.tmp
 
 runme ssh -t $REKALL_TARGET \
@@ -36,8 +40,6 @@ runme ssh -t $REKALL_TARGET \
      sudo zip $KERNEL.zip module_dwarf.ko /boot/System.map-$KERNEL"
 
 runme scp -rq $REKALL_TARGET:$REKALL_REMOTE_LOC/$KERNEL.zip /tmp
-}
-
 
 mkdir -p $VENV
 pushd $VENV
@@ -52,6 +54,7 @@ EOF
 
 chmod +x $VENV/runme.sh
 
+virtualenv -p python3 $VENV
 source bin/activate
 ./runme.sh
 deactivate
